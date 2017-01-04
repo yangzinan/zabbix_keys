@@ -20,7 +20,6 @@ func main() {
 		fmt.Printf("%d", int(v[disk_name].ReadBytes)>>10)
 	} else if t == "w" {
 		fmt.Printf("%d", int(v[disk_name].WriteBytes)>>10)
-		fmt.Println(v)
 	} else {
 		os.Exit(0)
 	}
