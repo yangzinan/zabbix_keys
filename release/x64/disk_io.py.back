@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+#!coding=utf8
+import psutil
+import sys
+import json
+
+def get_devices():
+	disks = psutil.disk_partitions()
+	disk_dict = {"data":None}
+	disk_list = []
+	driver_list = []
+	for disk in disks:
+		if disk.mountpoint != '/' and disk.mountpoint != "/dev/shm" and disk.mountpoint != "/boot":
+			driver = disk.device
+			driver = driver.split("/")[2]
+			driver_list.append(driver)
+	for driver in driver_list:
+		dirver_dict = {}
+		dirver_dict["{#NAME}"] = driver
+		disk_list.append(dirver_dict)
+	disk_dict["data"] = disk_list
+	disks_json = json.dumps(disk_dict, sort_keys=True, indent=4)
+	return disks_json
+def get_root():
+	disks = psutil.disk_partitions()
+	root_dict = {"data":None}
+	for disk in disks:
+		if disk.mountpoint == "/":
+			root = disk.device
+			root = root.split("/")[2]
+	root_dict1 = {}
+	root_list = []
+	root_dict1["{#NAME}"] = root
+	root_list.append(root_dict1)
+	root_dict["data"] = root_list
+	root_json = json.dumps(root_dict, sort_keys=True, indent=4)
+	return root_json
+def get_sent():
+	info = psutil.disk_io_counters(perdisk=True)
+	return (info[sys.argv[2]].read_bytes / 1024)
+def get_recv():
+	info = psutil.disk_io_counters(perdisk=True)
+	return (info[sys.argv[2]]. write_bytes / 1024)
+
+if __name__ == '__main__':
+	disks = psutil.disk_partitions()
+	if sys.argv[1] == "getdevices":
+		print get_devices()
+	elif sys.argv[1] == 'getsent':
+		print get_sent()
+	elif sys.argv[1] == 'getrecv':
+		print get_recv()
+	elif sys.argv[1] == 'getroot':
+		print get_root()
+
+
